@@ -61,7 +61,8 @@ func LoginPost(context *gin.Context) {
 	cookie, err := context.Request.Cookie("username")
 	//如果cookie是nil，代表cookie已经存在，已经登录
 	if err == nil {
-		context.String(http.StatusOK, cookie.Value)
+		context.JSON(http.StatusOK, gin.H{"error": "您已经登录"})
+		return
 	} else {
 		cookie = &http.Cookie{
 			Name:  "username",

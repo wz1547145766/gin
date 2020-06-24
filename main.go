@@ -4,7 +4,7 @@ import (
 	"gin/middleware"
 	"gin/user"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	//"github.com/jinzhu/gorm"
 	"net/http"
 )
 
