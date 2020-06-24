@@ -4,6 +4,7 @@ import (
 	"gin/middleware"
 	"gin/user"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
@@ -11,8 +12,6 @@ func main() {
 
 	r := gin.Default()
 	r.Use(middleware.Cors())
-	//r.Use(islog(true))
-	r.LoadHTMLFiles("./index.html")
 
 	shop := r.Group("/index")
 	shop.Use(middleware.Islog(true))

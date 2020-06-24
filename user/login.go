@@ -6,6 +6,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"net/http"
 )
 
@@ -13,8 +14,9 @@ import (
 func Login(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{
-		"message": "ok",
+		"mas": "asd",
 	})
+
 }
 
 //设置清除cookie，退出登录
