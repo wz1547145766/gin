@@ -1,4 +1,4 @@
-package user
+package accounts
 
 /*
 设置注册相关函数
@@ -14,7 +14,7 @@ import (
 
 var (
 	DB  *gorm.DB
-	err error
+	err interface{}
 )
 
 type PostUser struct {
@@ -28,6 +28,16 @@ type User struct {
 	Password string `gorm:"password" json:"password" form:"password"`
 }
 
+//连接数据库
+func linkSql() {
+	dbAddr := "root:@/gintest?charset=utf8&parseTime=True&loc=Local"
+	DB, err = gorm.Open("mysql", dbAddr)
+	if err != nil {
+		panic("数据库连接失败")
+	}
+
+}
+
 //表单接收创建用户并登陆
 func LoginPost(context *gin.Context) {
 
@@ -35,11 +45,7 @@ func LoginPost(context *gin.Context) {
 	var user User
 
 	//连接数据库
-	dbAddr := "root:@/gintest?charset=utf8&parseTime=True&loc=Local"
-	DB, err = gorm.Open("mysql", dbAddr)
-	if err != nil {
-		panic("数据库连接失败")
-	}
+	linkSql()
 	defer DB.Close()
 
 	//开启自动迁移
@@ -48,7 +54,7 @@ func LoginPost(context *gin.Context) {
 	//绑定post表单到user
 	err := context.ShouldBind(&postuser)
 
-	//字段验证，如果用户名在里面，就返回错误,不在的话就创建新记录
+	//字段验证，如果用户名存在，就返回错误,不在的话就创建新记录
 	err = DB.Where("username=?", postuser.Username).First(&user).Error
 	if err == nil {
 		context.JSON(http.StatusOK, gin.H{"error": "用户名已经存在"})
