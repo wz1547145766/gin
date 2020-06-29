@@ -3,8 +3,10 @@ package sever
 import (
 	"gin/accounts"
 	"gin/middleware"
-	"github.com/gin-gonic/gin"
+	"gin/news"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 //API接口
@@ -29,6 +31,12 @@ func Routers() *gin.Engine {
 		account.POST("/login", accounts.Login)
 		account.POST("/reg", accounts.LoginPost)
 		account.GET("/logout", accounts.Logout)
+	}
+
+	//新闻
+	new := r.Group("/news")
+	{
+		new.GET("/show", news.Shownews)
 	}
 
 	return r
