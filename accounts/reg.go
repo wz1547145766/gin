@@ -5,16 +5,11 @@ package accounts
 */
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"gin/sql"
 	"net/http"
-)
 
-var (
-	DB  *gorm.DB
-	err interface{}
+	"github.com/gin-gonic/gin"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 type PostUser struct {
@@ -22,45 +17,29 @@ type PostUser struct {
 	Password string `json:"password" form:"password"`
 }
 
-type User struct {
-	Id       int    `gorm:"id" json:"id"`
-	Username string `gorm:"username" json:"username" form:"username"`
-	Password string `gorm:"password" json:"password" form:"password"`
-}
-
-//连接数据库
-func linkSql() {
-	dbAddr := "root:@/gintest?charset=utf8&parseTime=True&loc=Local"
-	DB, err = gorm.Open("mysql", dbAddr)
-	if err != nil {
-		panic("数据库连接失败")
-	}
-
-}
-
 //表单接收创建用户并登陆
 func LoginPost(context *gin.Context) {
 
 	var postuser PostUser
-	var user User
+	var user sql.User
 
 	//连接数据库
-	linkSql()
-	defer DB.Close()
+	sql.LinkSql()
+	defer sql.DB.Close()
 
 	//开启自动迁移
-	DB.AutoMigrate(&User{})
+	sql.DB.AutoMigrate(&sql.User{})
 
 	//绑定post表单到user
 	err := context.ShouldBind(&postuser)
 
 	//字段验证，如果用户名存在，就返回错误,不在的话就创建新记录
-	err = DB.Where("username=?", postuser.Username).First(&user).Error
+	err = sql.DB.Where("username=?", postuser.Username).First(&user).Error
 	if err == nil {
 		context.JSON(http.StatusOK, gin.H{"error": "用户名已经存在"})
 		return
 	} else {
-		DB.Create(&User{Username: postuser.Username, Password: postuser.Password})
+		sql.DB.Create(&sql.User{Username: postuser.Username, Password: postuser.Password})
 	}
 
 	//新建cookie
