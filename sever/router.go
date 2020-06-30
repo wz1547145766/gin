@@ -34,9 +34,18 @@ func Routers() *gin.Engine {
 	}
 
 	//新闻
-	new := r.Group("/news")
+	new := r.Group("news")
 	{
-		new.GET("/show", news.Shownews)
+		//查看所有新闻
+		new.POST("/show", news.Shownews)
+		//查看当前新闻
+		new.GET("/current/:id")
+		//删除新闻
+		new.GET("/delnews")
+		//更新新闻
+		new.POST("/update")
+		//增加新闻
+		new.POST("/add")
 	}
 
 	return r

@@ -26,7 +26,7 @@ type News struct {
 
 //连接数据库
 func LinkSql() {
-	dbAddr := "root:@/gintest?charset=utf8&parseTime=True&loc=Local"
+	dbAddr := "root:@/gorm?charset=utf8&parseTime=True&loc=Local"
 	DB, err = gorm.Open("mysql", dbAddr)
 	if err != nil {
 		panic("数据库连接失败")

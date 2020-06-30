@@ -3,6 +3,7 @@ package news
 import (
 	"fmt"
 	"gin/sql"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,20 +11,98 @@ import (
 var err interface{}
 
 //新闻表单提交
-type News struct {
-	Title   string `gorm:"title" json:"title"`
-	Content string `gorm:"content" json:"content"`
+type PostNews struct {
+	Id      interface{} `gorm:"id" json:"id" form:"id"`
+	Title   string      `gorm:"title" json:"title" form:"title"`
+	Content string      `gorm:"content" json:"content" form:"content"`
 }
 
-func Shownews(context *gin.Context) {
+//新添加新闻
+func Addnews(context *gin.Context) {
+
+	var postnews PostNews
+
+	//连接数据库
+	sql.LinkSql()
+	defer sql.DB.Close()
 
 	//开启自动迁移
-	sql.DB.AutoMigrate(&sql.User{})
+	sql.DB.AutoMigrate(&sql.News{})
 
-	sql.LinkSql()
-	err = sql.DB.Find(&sql.News{}).Error
+	//绑定用户提交表单
+	err = context.ShouldBind(&postnews)
 	if err == nil {
-		fmt.Println(&sql.News{})
+		//新建记录
+		sql.DB.Create(&sql.News{Title: postnews.Title, Content: postnews.Content})
+	} else {
+		context.JSON(http.StatusOK, gin.H{"err": err})
 	}
 
+	context.JSON(http.StatusOK, gin.H{
+		"msg": "新闻添加成功",
+	})
 }
+
+//删除当期新闻
+func Delnews(context *gin.Context) {
+
+	var new sql.News
+
+	sql.LinkSql()
+	defer sql.DB.Close()
+
+	newsId := context.Param("id")
+	err = sql.DB.Where("id=?", newsId).First(&new).Error
+	if err == nil {
+		sql.DB.Delete(&new)
+	} else {
+		context.JSON(http.StatusOK, gin.H{"err": err})
+	}
+}
+
+//修改当前新闻
+func Updatanews(context *gin.Context) {
+
+	var new sql.News
+	var postnews PostNews
+
+	sql.LinkSql()
+	defer sql.DB.Close()
+
+	//开启自动迁移
+	sql.DB.AutoMigrate(&sql.News{})
+
+	err = context.ShouldBind(&postnews)
+	if err == nil {
+		err = sql.DB.Where("id=?", postnews.Id).First(&new).Error
+		if err == nil {
+			new.Title = postnews.Title
+			new.Content = postnews.Content
+			sql.DB.Save(&new)
+		}
+	}
+}
+
+//查看所有新闻
+func Shownews(context *gin.Context) {
+
+	var news []sql.News
+
+	sql.LinkSql()
+	defer sql.DB.Close()
+
+	//查询所有新闻，没有新闻返回错误
+	err = sql.DB.Find(&news).Error
+	if err == nil {
+		fmt.Println(&sql.News{})
+	} else {
+		context.JSON(http.StatusOK, gin.H{"err": err})
+	}
+
+	context.JSON(http.StatusOK, gin.H{
+		"news": news,
+	})
+
+}
+
+//查看当前新闻
