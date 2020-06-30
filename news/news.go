@@ -74,19 +74,15 @@ func Updatanews(context *gin.Context) {
 
 	err = context.ShouldBind(&postnews)
 	if err == nil {
-		fmt.Println("1")
 		err = sql.DB.Where("id=?", postnews.Id).First(&new).Error
 		if err == nil {
-			fmt.Println("2")
 			new.Title = postnews.Title
 			new.Content = postnews.Content
 			sql.DB.Save(&new)
 		} else {
-			fmt.Println("3")
 			context.JSON(http.StatusOK, gin.H{"err": err})
 		}
 	} else {
-		fmt.Println("4")
 		context.JSON(http.StatusOK, gin.H{"err": err})
 	}
 }

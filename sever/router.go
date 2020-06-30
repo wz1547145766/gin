@@ -42,9 +42,9 @@ func Routers() *gin.Engine {
 		//查看当前新闻
 		new.GET("/current/:id", news.Currentnews)
 		//删除新闻
-		new.GET("/delnews/:id", news.Delnews)
+		new.DELETE("/delnews/:id", news.Delnews)
 		//更新新闻
-		new.POST("/update", news.Updatanews)
+		new.PUT("/update", news.Updatanews)
 		//增加新闻
 		new.POST("/add", news.Addnews)
 	}

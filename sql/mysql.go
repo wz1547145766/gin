@@ -31,5 +31,4 @@ func LinkSql() {
 	if err != nil {
 		panic("数据库连接失败")
 	}
-
 }

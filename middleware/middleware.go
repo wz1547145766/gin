@@ -35,11 +35,8 @@ func Cors() gin.HandlerFunc {
 func Islog(check bool) gin.HandlerFunc {
 
 	return func(context *gin.Context) {
-		cookie, err := context.Request.Cookie("username")
+		_, err := context.Request.Cookie("username")
 		if err == nil {
-			context.JSON(http.StatusOK, gin.H{
-				"cookie": cookie.Value,
-			})
 			context.Next()
 		} else {
 			context.JSON(http.StatusOK, gin.H{
