@@ -12,9 +12,9 @@ var err interface{}
 
 //新闻表单提交
 type PostNews struct {
-	Id      interface{} `gorm:"id" json:"id" form:"id"`
-	Title   string      `gorm:"title" json:"title" form:"title"`
-	Content string      `gorm:"content" json:"content" form:"content"`
+	Id      int    `gorm:"id" json:"id" form:"id"`
+	Title   string `gorm:"title" json:"title" form:"title"`
+	Content string `gorm:"content" json:"content" form:"content"`
 }
 
 //新添加新闻
@@ -74,12 +74,20 @@ func Updatanews(context *gin.Context) {
 
 	err = context.ShouldBind(&postnews)
 	if err == nil {
+		fmt.Println("1")
 		err = sql.DB.Where("id=?", postnews.Id).First(&new).Error
 		if err == nil {
+			fmt.Println("2")
 			new.Title = postnews.Title
 			new.Content = postnews.Content
 			sql.DB.Save(&new)
+		} else {
+			fmt.Println("3")
+			context.JSON(http.StatusOK, gin.H{"err": err})
 		}
+	} else {
+		fmt.Println("4")
+		context.JSON(http.StatusOK, gin.H{"err": err})
 	}
 }
 
@@ -106,3 +114,18 @@ func Shownews(context *gin.Context) {
 }
 
 //查看当前新闻
+func Currentnews(context *gin.Context) {
+
+	var new sql.News
+
+	sql.LinkSql()
+	defer sql.DB.Close()
+
+	newsid := context.Param("id")
+
+	err = sql.DB.Where("id = ?", newsid).First(&new).Error
+	if err == nil {
+		context.JSON(http.StatusOK, gin.H{"msg": new})
+	}
+
+}

@@ -36,6 +36,7 @@ func Login(context *gin.Context) {
 			cookie = &http.Cookie{
 				Name:  "username",
 				Value: postUser.Username,
+				Path:  "/",
 			}
 			http.SetCookie(context.Writer, cookie)
 			msg = "登录成功"

@@ -25,7 +25,7 @@ func Routers() *gin.Engine {
 		shop.GET("/", func(context *gin.Context) { context.JSON(http.StatusOK, gin.H{"message": "ok"}) })
 	}
 
-	//账号相关
+	//账号
 	account := r.Group("accounts")
 	{
 		account.POST("/login", accounts.Login)
@@ -35,17 +35,18 @@ func Routers() *gin.Engine {
 
 	//新闻
 	new := r.Group("news")
+	new.Use(middleware.Islog(true))
 	{
 		//查看所有新闻
-		new.POST("/show", news.Shownews)
+		new.GET("/show", news.Shownews)
 		//查看当前新闻
-		new.GET("/current/:id")
+		new.GET("/current/:id", news.Currentnews)
 		//删除新闻
-		new.GET("/delnews")
+		new.GET("/delnews/:id", news.Delnews)
 		//更新新闻
-		new.POST("/update")
+		new.POST("/update", news.Updatanews)
 		//增加新闻
-		new.POST("/add")
+		new.POST("/add", news.Addnews)
 	}
 
 	return r

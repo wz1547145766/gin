@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"regexp"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func Cors() gin.HandlerFunc {
@@ -42,7 +43,8 @@ func Islog(check bool) gin.HandlerFunc {
 			context.Next()
 		} else {
 			context.JSON(http.StatusOK, gin.H{
-				"msg": "没有登录",
+				"msg": "没有登录,此操作需要登录才能执行",
+				"err": err,
 			})
 			context.Abort()
 		}
