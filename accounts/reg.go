@@ -13,8 +13,8 @@ import (
 )
 
 type PostUser struct {
-	Username string `json:"username" form:"username"`
-	Password string `json:"password" form:"password"`
+	Username string `json:"username" form:"username" binding:"required"`
+	Password string `json:"password" form:"password" binding:"required"`
 }
 
 //表单接收创建用户并登陆
@@ -32,6 +32,9 @@ func LoginPost(context *gin.Context) {
 
 	//绑定post表单到user
 	err := context.ShouldBind(&postuser)
+	if err != nil {
+		context.JSON(http.StatusOK, gin.H{"err": err})
+	}
 
 	//字段验证，如果用户名存在，就返回错误,不在的话就创建新记录
 	err = sql.DB.Where("username=?", postuser.Username).First(&user).Error
