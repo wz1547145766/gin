@@ -13,7 +13,7 @@ import (
 func Routers() *gin.Engine {
 
 	r := gin.Default()
-	r.Use(middleware.Cors())
+	// r.Use(middleware.Cors())
 
 	//主页
 	r.GET("/")

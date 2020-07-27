@@ -5,28 +5,30 @@ package accounts
 */
 
 import (
+	"fmt"
 	"gin/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
-
-var err interface{}
 
 //登陆首页
 func Login(context *gin.Context) {
 
 	var postUser PostUser
 	var user sql.User
-	msg := ""
+
+	var msg string
 
 	//连接数据库
 	sql.LinkSql()
 	defer sql.DB.Close()
 
 	//绑定post表单到user
-	err = context.ShouldBind(&postUser)
+	err := context.ShouldBind(&postUser)
+	message := context.PostForm("username")
+	fmt.Println(postUser)
+	fmt.Print(message)
 
 	//查询字段
 	err = sql.DB.Where("username = ?", postUser.Username).First(&user).Error
@@ -39,14 +41,16 @@ func Login(context *gin.Context) {
 				Path:  "/",
 			}
 			http.SetCookie(context.Writer, cookie)
-			msg = "登录成功"
+			msg = "success"
 		} else {
-			err = "账号或密码错误"
+			context.JSON(http.StatusOK, gin.H{
+				"err": err.Error(),
+			})
 		}
 	}
 	context.JSON(http.StatusOK, gin.H{
 		"msg": msg,
-		"err": err,
+		"err": err.Error(),
 	})
 }
 
